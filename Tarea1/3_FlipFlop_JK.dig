@@ -105,19 +105,28 @@
     </visualElement>
     <visualElement>
       <elementName>Clock</elementName>
-      <elementAttributes/>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>Clock</string>
+        </entry>
+        <entry>
+          <string>runRealTime</string>
+          <boolean>true</boolean>
+        </entry>
+      </elementAttributes>
       <pos x="-180" y="280"/>
     </visualElement>
     <visualElement>
       <elementName>Rectangle</elementName>
       <elementAttributes>
         <entry>
-          <string>Label</string>
-          <string>Slave</string>
-        </entry>
-        <entry>
           <string>RectHeight</string>
           <int>17</int>
+        </entry>
+        <entry>
+          <string>Label</string>
+          <string>Slave</string>
         </entry>
         <entry>
           <string>RectWidth</string>

@@ -80,7 +80,16 @@ Además llamamos Q(t+1) a la actualización de estado posterior a un ciclo del r
     </visualElement>
     <visualElement>
       <elementName>Clock</elementName>
-      <elementAttributes/>
+      <elementAttributes>
+        <entry>
+          <string>Label</string>
+          <string>Clock</string>
+        </entry>
+        <entry>
+          <string>runRealTime</string>
+          <boolean>true</boolean>
+        </entry>
+      </elementAttributes>
       <pos x="180" y="420"/>
     </visualElement>
     <visualElement>
