@@ -17,16 +17,13 @@
  */
 
 #include <stdint.h>
-#include "MucHal.h"
-
-unsigned int ejemplo=0;
 
 
 int main(void)
 {
-	ejemplo = RCC_AHB1ENR;
     /* Loop forever */
 	while(1){
 
 	}
+	return 0;
 }
