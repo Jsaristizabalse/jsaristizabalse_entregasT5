@@ -103,7 +103,8 @@ typedef struct
 	volatile uint32_t reserved4;	//reserved									ADDR_OFFSET: 0x38
 	volatile uint32_t reserved5;	//reserved									ADDR_OFFSET: 0x3C
 	volatile uint32_t APB1ENR;		//APB1 peripheral clock enable register		ADDR_OFFSET: 0x40
-	volatile uint32_t APB2ENR;		//AHB2 peripheral clock enable register		ADDR_OFFSET: 0x44
+	volatile uint32_t AHB2ENR;		//AHB2 peripheral clock enable register		ADDR_OFFSET: 0x44
+	volatile uint32_t AHB1ENR;		//AHB1 peripheral clock enable register		ADDR_OFFSET: 0x18
 	volatile uint32_t reserved6;	//reserved									ADDR_OFFSET: 0x48
 	volatile uint32_t reserved7;	//reserved									ADDR_OFFSET: 0x4C
 	volatile uint32_t AHB1LPENR;	//AHB1 clock enable low power register		ADDR_OFFSET: 0x50
