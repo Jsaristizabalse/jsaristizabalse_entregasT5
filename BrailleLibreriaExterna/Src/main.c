@@ -15,13 +15,17 @@
  *
  ******************************************************************************
  */
-#include <stm32f4xx.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdbool.h>
+
+#include <stm32f4xx.h>
+
 #include "GPIOxDriver.h"
 #include "BasicTimer.h"
 #include "ExtiDriver.h"
+#include "USARTxDriver.h"
 
-#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -38,6 +42,11 @@ GPIO_Handler_t handlerLED5 = {0};
 GPIO_Handler_t handlerLED6 = {0};
 GPIO_Handler_t GPIO_StructHandlers[ROWS][COLS];
 uint32_t counter_2 = 0;		//Contador de prueba, funciona con el blinky
+
+
+GPIO_Handler_t handlerPinTX = {0};
+GPIO_Handler_t handlerPinRX = {0};
+USART_Handler_t usart2Comm = {0};
 
 int state[ROWS][COLS] = {
 		{0,0},

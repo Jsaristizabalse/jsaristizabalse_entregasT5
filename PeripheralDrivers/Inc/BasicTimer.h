@@ -10,14 +10,19 @@
 
 #include "stm32f4xx.h"
 
-#define BTIMER_MODE_UP		0
-#define BTIMER_MODE_DOWN	1
+#define BTIMER_MODE_UP					0
+#define BTIMER_MODE_DOWN				1
 
-#define BTIMER_SPEED_10us	160
-#define BTIMER_SPEED_100us		1600
-#define BTIMER_SPEED_1ms			16000
-#define BTIMER_INTERRUPT_ENABLE		1
-#define BTIMER_INTERRUPT_DISABLE 	0
+#define BTIMER_SPEED_10us				160
+#define BTIMER_SPEED_100us				1600
+#define BTIMER_SPEED_1ms				16000
+
+#define BTIMER_SPEED_80MHz_10us			800
+#define BTIMER_SPEED_80MHz_100us		8000
+
+
+#define BTIMER_INTERRUPT_ENABLE			1
+#define BTIMER_INTERRUPT_DISABLE 		0
 
 
 
