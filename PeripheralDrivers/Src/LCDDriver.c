@@ -1,17 +1,12 @@
-/*
- * LCDDriver.c
- *
- *  Created on: May 23, 2023
- *      Author: aristizabal
- */
 #include <stdint.h>
 #include "LCDDriver.h"
+#include "SysTickDriver.h"
 
-/*
- * Se debe configurar los pines para el I2C (SDA y SCL),
- * para lo cual se necesita el modulo GPIO y los pines configurados
- * Pines como open drain y en pullUp
- */
+#define HSI_CLOCK_CONFIGURED		0
+#define HSE_CLOCK_CONFIGURED		1
+#define PLL_CLOCK_CONFIGURED		2
+
+
 
 void LCD_sendCMD (I2C_Handler_t *ptrHandlerI2C, char cmd){
 	char _U;
@@ -63,43 +58,42 @@ void LCD_sendata (I2C_Handler_t *ptrHandlerI2C, char data){
 void LCD_Clear (I2C_Handler_t *ptrHandlerI2C) {
 //	LCD_sendata (ptrHandlerI2C, 0x00);
 	LCD_sendCMD(ptrHandlerI2C, 0x01);
-	delay_50();
+	delay_X(50);
 }
 
 void LCD_Init (I2C_Handler_t *ptrHandlerI2C) {
-
 	// Delay de inizializacion
-	delay_50();
+	delay_X(50);
 	// Primer 0x30 para BF
 	LCD_sendCMD (ptrHandlerI2C, 0x30);
-	delay_5();
+	delay_X(5);
 	// Segundo 0x30 para BF
 	LCD_sendCMD (ptrHandlerI2C, 0x30);
-	delay_1();
+	delay_X(1);
 	// Tercer 0x30 para BF
 	LCD_sendCMD (ptrHandlerI2C, 0x30);
 
 	// Delay después de la secuencia inicial de inicializacion
-	delay_50();
+	delay_X(50);
 
 	/*
 	 * Configuraciones para la escritura
 	 */
 	// Data lenght 4, lines 2, character font 5X8
 	LCD_sendCMD (ptrHandlerI2C, 0x20);
-	delay_50();
+	delay_X(50);
 	LCD_sendCMD (ptrHandlerI2C, 0x28);
-	delay_50();
+	delay_X(50);
 	// Display off
 	LCD_sendCMD (ptrHandlerI2C, 0x08);
-	delay_50();
+	delay_X(50);
 	// Display Clear
 	LCD_sendCMD (ptrHandlerI2C, 0x01);
-	delay_50();
+	delay_X(50);
 	// Entry mode
 	LCD_sendCMD (ptrHandlerI2C, 0x06);
 
-	delay_50();
+	delay_X(50);
 	// Delay para encendido
 	LCD_sendCMD (ptrHandlerI2C, 0x0C);
 }
@@ -109,9 +103,9 @@ void LCD_sendSTR(I2C_Handler_t *ptrHandlerI2C, char *str) {
 }
 void LCD_setCursor(I2C_Handler_t *ptrHandlerI2C, uint8_t x, uint8_t y) {
 	uint8_t cursor;
-	switch (x) {
+	switch (y) {
 	case 0 :
-		switch (y) {
+		switch (x) {
 		case 0 : cursor = 0x00; break;
 		case 1 : cursor = 0x01; break;
 		case 2 : cursor = 0x02; break;
@@ -135,7 +129,7 @@ void LCD_setCursor(I2C_Handler_t *ptrHandlerI2C, uint8_t x, uint8_t y) {
 		} break;
 
 	case 1 :
-		switch (y) {
+		switch (x) {
 		case 0 : cursor = 0x40; break;
 		case 1 : cursor = 0x41; break;
 		case 2 : cursor = 0x42; break;
@@ -159,7 +153,7 @@ void LCD_setCursor(I2C_Handler_t *ptrHandlerI2C, uint8_t x, uint8_t y) {
 		} break;
 
 	case 2 :
-		switch (y) {
+		switch (x) {
 		case 0 : cursor = 0x14; break;
 		case 1 : cursor = 0x15; break;
 		case 2 : cursor = 0x16; break;
@@ -183,7 +177,7 @@ void LCD_setCursor(I2C_Handler_t *ptrHandlerI2C, uint8_t x, uint8_t y) {
 		} break;
 
 	case 3 :
-		switch (y) {
+		switch (x) {
 		case 0 : cursor = 0x54; break;
 		case 1 : cursor = 0x55; break;
 		case 2 : cursor = 0x56; break;
@@ -208,34 +202,16 @@ void LCD_setCursor(I2C_Handler_t *ptrHandlerI2C, uint8_t x, uint8_t y) {
 	}
 	LCD_sendCMD(ptrHandlerI2C, 0x80|cursor);
 }
-void delay_50 (void){
-	for (int i=0;i<62500;i++){
-		__NOP();
-	}
+
+
+void delay_X (uint16_t num){
+	config_SysTick_ms(PLL_CLOCK_CONFIGURED);
+
+	delay_ms(num);
 }
 
-void delay_5 (void){
-	for (int i=0; i<6250; i++){
-		__NOP();
-	}
-}
-
-void delay_1 (void){
-	for (int i=0;i<1250;i++){
-		__NOP();
-	}
-}
-
-void delay_10 (void){
-	for (int i=0;i<12500;i++){
-		__NOP();
-	}
-}
-
-void LCD_ClearScreen(I2C_Handler_t *ptrHandlerI2C){
+void LCD_ClearScreen(I2C_Handler_t *ptrHandlerI2C, uint8_t cursor1){
 	char DataClean[64] = "                    ";
-	for(int i=0;i<4;i++){
-		LCD_setCursor(ptrHandlerI2C, i, 0);
-		LCD_sendSTR(ptrHandlerI2C,DataClean);
-	}
+	LCD_setCursor(ptrHandlerI2C, 0, cursor1);
+	LCD_sendSTR(ptrHandlerI2C, DataClean);
 }

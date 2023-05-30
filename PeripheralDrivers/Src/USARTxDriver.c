@@ -1,10 +1,9 @@
 /*
  * USARTxDriver.c
  *
- *  Created on: Apr 19, 2023
- *      Author: aristizabal
+ *  Created on: Apr 6, 2022
+ *      Author: namontoy
  */
-
 
 #include <stm32f4xx.h>
 #include "USARTxDriver.h"
