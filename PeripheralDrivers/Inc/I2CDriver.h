@@ -30,6 +30,10 @@
 #define I2C_MODE_SM_SPEED_100KHz_80MHz          200
 #define I2C_MODE_FM_SPEED_400KHz_80MHz           33
 
+#define I2C_MODE_SM_SPEED_100KHz_80MHz          200
+#define I2C_MODE_FM_SPEED_400KHz_80MHz           33
+
+
 #define I2C_MAX_RISE_TIME_SM         17
 #define I2C_MAX_RISE_TIME_FM         6
 

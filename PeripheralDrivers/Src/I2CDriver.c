@@ -42,7 +42,7 @@ void i2c_config(I2C_Handler_t *ptrHandlerI2C){
 	/* Indicar la velocidad del reloj principal, señal usada por el periférico
 	 * para el reloj del bus I2C */
 	ptrHandlerI2C->ptrI2Cx->CR2 &= ~(0b111111 << I2C_CR2_FREQ_Pos);
-	ptrHandlerI2C->ptrI2Cx->CR2 |= (MAIN_CLOCK_40_MHz_FOR_I2C << I2C_CR2_FREQ_Pos);
+	ptrHandlerI2C->ptrI2Cx->CR2 |= (MAIN_CLOCK_16_MHz_FOR_I2C << I2C_CR2_FREQ_Pos);
 
 	/* Configuración de modo I2C en el que el sistema funciona
 	 * Incluye velocidad de reloj y tiempo máximo para cambio de señal
@@ -55,7 +55,7 @@ void i2c_config(I2C_Handler_t *ptrHandlerI2C){
 		ptrHandlerI2C->ptrI2Cx->CCR &= ~I2C_CCR_FS;
 
 		/* Registro para generar señal de reloj */
-		ptrHandlerI2C->ptrI2Cx->CCR |= (I2C_MODE_SM_SPEED_100KHz_80MHz << I2C_CCR_CCR_Pos);
+		ptrHandlerI2C->ptrI2Cx->CCR |= (I2C_MODE_SM_SPEED_100KHz << I2C_CCR_CCR_Pos);
 
 		/* Registro que controla TRISE máximo */
 		ptrHandlerI2C->ptrI2Cx->TRISE |= I2C_MAX_RISE_TIME_SM;
@@ -65,7 +65,7 @@ void i2c_config(I2C_Handler_t *ptrHandlerI2C){
 		ptrHandlerI2C->ptrI2Cx->CCR |= I2C_CCR_FS;
 
 		/* Registro para generar señal de reloj */
-		ptrHandlerI2C->ptrI2Cx->CCR |= (I2C_MODE_FM_SPEED_400KHz_80MHz << I2C_CCR_CCR_Pos);
+		ptrHandlerI2C->ptrI2Cx->CCR |= (I2C_MODE_FM_SPEED_400KHz << I2C_CCR_CCR_Pos);
 
 		/* Registro que controla TRISE máximo */
 		ptrHandlerI2C->ptrI2Cx->TRISE |= I2C_MAX_RISE_TIME_FM;

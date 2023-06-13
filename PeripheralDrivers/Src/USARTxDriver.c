@@ -157,6 +157,10 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 		ptrUsartHandler->ptrUSARTx->BRR = 0x008B;
 	}
 
+
+
+
+
 	// Ver tabla de valores (Tabla 73), Frec = 80MHz
 	else if(ptrUsartHandler->USART_Config.USART_baudrate == USART_BAUDRATE_80MHz_9600){
 		// Escriba acá su código y los comentarios que faltan
@@ -182,6 +186,33 @@ void USART_Config(USART_Handler_t *ptrUsartHandler){
 		// Mantiza = 43 = 0x2B, fraction = 16 * 0.40278 = 6
 		// Valor a cargar 0x02B6
 		ptrUsartHandler->ptrUSARTx->BRR = 0x2B6;
+	}
+
+
+
+	// Ver tabla de valores (Tabla 73), Frec = 100MHz
+	else if(ptrUsartHandler->USART_Config.USART_baudrate == USART_BAUDRATE_100MHz_9600){
+		// Escriba acá su código y los comentarios que faltan
+		// El valor a cargar es 651.04166 -> Mantiza = 651, fraction = 0.0416666667
+		// Mantiza = 260 = 0x28B, fraction = 16 * 0.416666667 = 0.666
+		// Valor a cargar 0x28B
+		ptrUsartHandler->ptrUSARTx->BRR = 0x28B;
+	}
+	// Ver tabla de valores (Tabla 73), Frec = 100MHz
+	else if(ptrUsartHandler->USART_Config.USART_baudrate == USART_BAUDRATE_100MHz_19200){
+		// Escriba acá su código y los comentarios que faltan
+		// El valor a cargar es 325.52083 -> Mantiza = 325, fraction = 0.52083
+		// Mantiza = 325 = 0x145, fraction = 16 * 0.52083 = 8
+		// Valor a cargar 0x1458
+		ptrUsartHandler->ptrUSARTx->BRR = 0x1458;
+	}
+	// Ver tabla de valores (Tabla 73), Frec = 100MHz
+	else if(ptrUsartHandler->USART_Config.USART_baudrate == USART_BAUDRATE_100MHz_115200){
+		// Escriba acá su código y los comentarios que faltan
+		// El valor a cargar es 54.25347 -> Mantiza = 54, fraction = 0.25347
+		// Mantiza = 54 = 0x36, fraction = 16 * 0.25347 = 4
+		// Valor a cargar 0x364
+		ptrUsartHandler->ptrUSARTx->BRR = 0x364;
 	}
 
 	// 2.6 Configuramos el modo: TX only, RX only, RXTX, disable
