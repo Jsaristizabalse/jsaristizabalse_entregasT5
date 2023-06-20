@@ -37,6 +37,13 @@
 #define HSE_CLOCK_CONFIGURED		1
 #define PLL_CLOCK_CONFIGURED		2
 
+#define MAX_RX_LIST_SIZE 100   // Tamaño máximo de la lista de recepción
+char rxList[MAX_RX_LIST_SIZE];   // Lista de recepción para almacenar los datos recibidos
+uint8_t rxListIndex = 0;   // Índice actual en la lista de recepción
+
+
+
+
 /* Definicion de handlers */
 
 
@@ -61,7 +68,21 @@ GPIO_Handler_t handlerPinTX		= {0};
 GPIO_Handler_t handlerPinRX		= {0};
 USART_Handler_t usart2Comm		= {0};
 
+char bufferReception[64] = {0};
+char cmd[64] = {0};
+char bufferMsg[64] = {0};
+char bufferBraille[1024] = {0};
+
 char bufferData[64]				= {0};
+
+
+float firstParameter = 0;
+unsigned int secondParameter = 0;
+unsigned int thirdParameter = 0;
+uint8_t counterReception = 0;
+
+bool stringComplete = false;
+
 
 int state[ROWS][COLS] = {
 		{0,0},
@@ -76,11 +97,14 @@ int ledPins[ROWS][COLS] = {
 		{PIN_12,PIN_13}
 };
 
+uint8_t flagDelayTimer = RESET;
 uint8_t flagBraille = RESET;
+uint8_t listRdy = 0;
 uint8_t auxBraille = 0;
 uint8_t rxData = 0;
 uint32_t counter = 0;		//Contador para el timer de la matriz de braile
 
+uint8_t buffer[256]; // Definir un búfer para almacenar los datos recibidos
 
 // Definicion de las cabeceras de las funciones del main
 void init_Hardware(void);			//Inicializar el hardware
@@ -88,10 +112,14 @@ void displayNum(uint8_t num);		//Mostramos el numero en el display
 void clearLEDMatrix(void);			//Limpiar la pantalla de LEDS
 void updateLEDMatrix(int state[][COLS]);	//Actualizar la matriz
 void alfabetoBraille(char letra);			//Diccionario
+void traducirBraille(char str[]);
+void parseCommands(char  *ptrbufferReception);
 
 
 
 
+
+char str[] = "Hola mundo";
 
 
 int main(void){
@@ -103,25 +131,31 @@ int main(void){
 
 
 
-//int len = strlen(str);
 
 
-	char str[] = "Hola mundo!";
+
+//	int len = strlen(str);
+	writeMsg(&usart2Comm, bufferData);
 
 	while(1){
-	writeMsg(&usart2Comm, bufferData);
-		if (flagBraille== SET){
-			alfabetoBraille(str[auxBraille]);
-			flagBraille = RESET;
-			auxBraille++;
-//			if (auxBraille == len){
-//				stopTimer(&handlerTimerLed);
-//			}
+
+
+
+
+		if (listRdy) {
+		traducirBraille(bufferBraille);
 		}
-		auxBraille=0;
+
+
+
+
+
 
 
 	}//Fin del While
+
+
+
 	return(0);
 }//Fin del Main
 
@@ -229,19 +263,24 @@ void BasicTimer2_Callback(void){
 
 void BasicTimer3_Callback(void){
 	flagBraille = SET;
+
+	if (flagDelayTimer) {
+
+		flagDelayTimer = RESET;
+
+	}
+
 	counter++;
 
 }
 
 
-void usart2Rx_Callback(void){
-	rxData = getRxData();
-}
+
 
 
 void updateLEDMatrix(int state[][COLS]){
-	clearLEDMatrix();
-	delay_ms(1000);
+//	clearLEDMatrix();
+//	delay_ms(1000);
 
 
 	for(int i = 0; i < ROWS;i++){
@@ -249,6 +288,17 @@ void updateLEDMatrix(int state[][COLS]){
 			GPIO_WritePin(&GPIO_StructHandlers[i][j], state[i][j]);
 		}
 	}
+
+	delay_ms(200);
+	clearLEDMatrix();
+	delay_ms(800);
+
+	for(int i = 0; i < ROWS;i++){
+		for(int j = 0; j<COLS;j++){
+			GPIO_WritePin(&GPIO_StructHandlers[i][j], state[i][j]);
+		}
+	}
+
 }
 
 void clearLEDMatrix(void){
@@ -265,6 +315,20 @@ void clearLEDMatrix(void){
 
 }
 
+void traducirBraille(char str[]){
+
+	if (flagBraille== SET){
+		alfabetoBraille(str[auxBraille]);
+
+
+		auxBraille++;
+		flagBraille = RESET;
+	}
+
+	if (str[auxBraille] == '\0') {
+		auxBraille = 0;
+	}
+}
 
 void alfabetoBraille(char letra){
 
@@ -552,15 +616,15 @@ void alfabetoBraille(char letra){
 			break;
 		}
 
-//		case 'á': {
-//			int new_state[ROWS][COLS] = {
-//					{ 1, 1 },
-//					{ 1, 0 },
-//					{ 1, 1 }
-//			};
-//			memcpy(state, new_state, sizeof(state));
-//			break;
-//		}
+		case 160: {
+			int new_state[ROWS][COLS] = {
+					{ 1, 1 },
+					{ 1, 0 },
+					{ 1, 1 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
 
 		case 130: {
 			int new_state[ROWS][COLS] = {
@@ -717,6 +781,71 @@ void alfabetoBraille(char letra){
 }
 
 
+
+
+
+void parseCommands(char  *ptrbufferReception){
+	sscanf(ptrbufferReception,"%s %f %u %u",cmd,&firstParameter,&secondParameter,&thirdParameter);
+
+
+
+	//Comando para solicitar ayuda
+	if(strcmp(cmd, "help") == 0){
+		writeMsg(&usart2Comm, "Help Menu CMDS: \n");
+
+	}
+	else if (strcmp(cmd, "Reset") == 0) {
+		auxBraille=0;
+		flagBraille = RESET;
+		clearLEDMatrix();
+		writeMsg(&usart2Comm, "Reinicio del sistema \n");
+		delay_ms(5000);
+	}
+
+	else if(strcmp(cmd, "Timer") == 0) {
+
+
+			if (firstParameter > 0) {
+
+				handlerBrailleTimer.TIMx_Config.TIMx_period						= firstParameter*1000;
+				BasicTimer_Config(&handlerBrailleTimer);
+
+
+				sprintf(bufferMsg,"Se configura el tiempo a %.2f s",firstParameter);
+				writeMsg(&usart2Comm, bufferMsg);
+			}
+	}
+
+
+	else{
+		writeMsg(&usart2Comm, "Comando erroneo.\n Ingresa \"help @\" para ver la lista de comandos.\n");
+	}
+}
+
+void usart2Rx_Callback(void){
+	rxData = getRxData();
+
+	sprintf(bufferMsg,"Recibido %c \n",rxData);
+	writeMsg(&usart2Comm, bufferMsg);
+
+
+    // Agregar el dato recibido al final de la lista
+    rxList[rxListIndex++] = rxData;
+
+    if (rxData == '@') {
+        rxList[rxListIndex - 1] = '\0';   // Asegurar que la lista esté terminada correctamente con un terminador de cadena
+        listRdy = 1;
+        if (rxListIndex <= MAX_RX_LIST_SIZE) {
+            sprintf(bufferBraille, "Frase formada: %s\n", rxList);
+        } else {
+            sprintf(bufferBraille, "Frase formada: (excede el tamaño máximo de la lista)\n");
+        }
+        writeMsg(&usart2Comm, bufferBraille);
+        rxListIndex = 0;
+        memset(rxList, 0, sizeof(rxList));
+    }
+
+}
 
 
 
