@@ -89,6 +89,7 @@ void USART_Config(USART_Handler_t *ptrUsartHandler);
 
 int writeChar(USART_Handler_t *ptrUsartHandler, char dataToSend );
 void writeMsg(USART_Handler_t *ptrUsartHandler, char *msgToSend );
+void write_uintMsg(USART_Handler_t *ptrUsartHandler, uint8_t *msgToSend);
 
 uint8_t getRxData(void);
 

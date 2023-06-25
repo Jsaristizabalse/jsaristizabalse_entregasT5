@@ -329,6 +329,15 @@ void writeMsg(USART_Handler_t *ptrUsartHandler, char *msgToSend){
 }
 
 
+void write_uintMsg(USART_Handler_t *ptrUsartHandler, uint8_t *msgToSend){
+	int caracter = 0;
+	while(msgToSend[caracter] != '\0'){
+		writeChar(ptrUsartHandler, msgToSend[caracter]);
+		caracter++;
+	}
+}
+
+
 
 
 

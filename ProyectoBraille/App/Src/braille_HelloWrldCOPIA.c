@@ -99,6 +99,7 @@ int ledPins[ROWS][COLS] = {
 
 uint8_t flagDelayTimer = RESET;
 uint8_t flagBraille = RESET;
+uint8_t listRdy = 0;
 uint8_t auxBraille = 0;
 uint8_t rxData = 0;
 uint32_t counter = 0;		//Contador para el timer de la matriz de braile
@@ -118,8 +119,10 @@ void parseCommands(char  *ptrbufferReception);
 
 
 
-char str[] = "h";
+char str[] = "Hola mundo";
+float timeBraille= 3;
 
+uint8_t setClick= 1;
 
 int main(void){
 	//Activamos el coprocesador matematico
@@ -127,6 +130,7 @@ int main(void){
 	//Inicializamos todos los elementos del sistema
 	init_Hardware();
 	sprintf(bufferData, "\nProyecto:\nTraduccion de texto a braille\n");
+	delay_ms(1000);
 
 
 
@@ -138,8 +142,16 @@ int main(void){
 
 	while(1){
 
+//		traducirBraille(str);
 
-//		traducirBraille(rxData);
+		if (listRdy) {
+		traducirBraille(bufferBraille);
+		}
+
+
+
+
+
 
 
 	}//Fin del While
@@ -197,7 +209,7 @@ void init_Hardware(void){
 	handlerBrailleTimer.ptrTIMx										= TIM3;
 	handlerBrailleTimer.TIMx_Config.TIMx_mode						= BTIMER_MODE_UP;
 	handlerBrailleTimer.TIMx_Config.TIMx_speed						= BTIMER_SPEED_1ms;
-	handlerBrailleTimer.TIMx_Config.TIMx_period						= 1000;
+	handlerBrailleTimer.TIMx_Config.TIMx_period						= timeBraille*1000;
 	handlerBrailleTimer.TIMx_Config.TIMx_interruptEnable			= BTIMER_INTERRUPT_ENABLE;
 	BasicTimer_Config(&handlerBrailleTimer);
 
@@ -272,12 +284,34 @@ void updateLEDMatrix(int state[][COLS]){
 //	clearLEDMatrix();
 //	delay_ms(1000);
 
-
-	for(int i = 0; i < ROWS;i++){
-		for(int j = 0; j<COLS;j++){
-			GPIO_WritePin(&GPIO_StructHandlers[i][j], state[i][j]);
+	if (setClick) {
+		for(int i = 0; i < ROWS;i++){
+			for(int j = 0; j<COLS;j++){
+				GPIO_WritePin(&GPIO_StructHandlers[i][j], state[i][j]);
+			}
 		}
+
+		delay_ms(timeBraille*0.2*1000);
+		clearLEDMatrix();
+		delay_ms(timeBraille*0.8*1000);
+
+		for(int i = 0; i < ROWS;i++){
+			for(int j = 0; j<COLS;j++){
+				GPIO_WritePin(&GPIO_StructHandlers[i][j], state[i][j]);
+			}
+		}
+
 	}
+
+	else{
+		for(int i = 0; i < ROWS;i++){
+			for(int j = 0; j<COLS;j++){
+				GPIO_WritePin(&GPIO_StructHandlers[i][j], state[i][j]);
+			}
+		}
+
+	}
+
 }
 
 void clearLEDMatrix(void){
@@ -297,7 +331,7 @@ void clearLEDMatrix(void){
 void traducirBraille(char str[]){
 
 	if (flagBraille== SET){
-//		alfabetoBraille(str[auxBraille]);
+		alfabetoBraille(str[auxBraille]);
 
 
 		auxBraille++;
@@ -307,6 +341,466 @@ void traducirBraille(char str[]){
 	if (str[auxBraille] == '\0') {
 		auxBraille = 0;
 	}
+}
+
+void alfabetoBraille(char letra){
+
+	if (isupper(letra)){
+		int state[ROWS][COLS] = {
+				{0,1},
+				{0,0},
+				{0,1}
+		};
+		updateLEDMatrix(state);
+		delay_ms(timeBraille*1000);
+	}
+
+	if(isdigit(letra)){
+		int state[ROWS][COLS] = {
+				{0,1},
+				{0,1},
+				{1,1}
+		};
+		updateLEDMatrix(state);
+		delay_ms(timeBraille*1000);
+	}
+
+	if(letra == '\xE1'){
+		int state[ROWS][COLS] = {
+				{0,1},
+				{0,1},
+				{1,1}
+		};
+		updateLEDMatrix(state);
+		delay_ms(timeBraille*1000);
+	}
+
+	switch (tolower(letra)) {
+		case 'a':
+		case '1': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 0 },
+					{ 0, 0 },
+					{ 0, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+
+		case 'b':
+		case '2': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 0 },
+					{ 1, 0 },
+					{ 0, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+		case 'c':
+		case '3': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 1 },
+					{ 0, 0 },
+					{ 0, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+		case 'd':
+		case '4': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 1 },
+					{ 0, 1 },
+					{ 0, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+		case 'e':
+		case '5': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 0 },
+					{ 0, 1 },
+					{ 0, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+		case 'f':
+		case '6': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 0 },
+					{ 1, 0 },
+					{ 0, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+		case 'g':
+		case '7': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 1 },
+					{ 1, 0 },
+					{ 0, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+		case 'h':
+		case '8': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 0 },
+					{ 1, 1 },
+					{ 0, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+		case 'i':
+		case '9': {
+			int new_state[ROWS][COLS] = {
+					{ 0, 1 },
+					{ 1, 0 },
+					{ 0, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+		case 'j':
+		case '0': {
+			int new_state[ROWS][COLS] = {
+					{ 0, 1 },
+					{ 1, 1 },
+					{ 0, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+		case 'k': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 0 },
+					{ 0, 0 },
+					{ 1, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+		case 'l': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 0 },
+					{ 1, 0 },
+					{ 1, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+		case 'm': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 1 },
+					{ 0, 0 },
+					{ 1, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+		case 'n': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 1 },
+					{ 0, 1 },
+					{ 1, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+		case 'o': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 0 },
+					{ 0, 1 },
+					{ 1, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+		case 'p': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 1 },
+					{ 1, 0 },
+					{ 1, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+		case 'q': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 1 },
+					{ 1, 1 },
+					{ 1, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+		case 'r': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 0 },
+					{ 1, 1 },
+					{ 1, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+		case 's': {
+			int new_state[ROWS][COLS] = {
+					{ 0, 1 },
+					{ 1, 0 },
+					{ 1, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+		case 't': {
+			int new_state[ROWS][COLS] = {
+					{ 0, 1 },
+					{ 1, 1 },
+					{ 1, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+
+		case 'u': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 0 },
+					{ 0, 0 },
+					{ 1, 1 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+		case 'v': {
+			int new_state[ROWS][COLS] = {
+					{ 0, 1 },
+					{ 0, 0 },
+					{ 1, 1 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+		case 'w': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 0 },
+					{ 1, 1 },
+					{ 0, 1 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+		case 'x': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 1 },
+					{ 0, 0 },
+					{ 1, 1 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+		case 'y': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 1 },
+					{ 0, 1 },
+					{ 1, 1 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+		case 'z': {
+			int new_state[ROWS][COLS] = {
+					{ 1, 0 },
+					{ 0, 1 },
+					{ 1, 1 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+		case ' ': {
+			int new_state[ROWS][COLS] = {
+					{ 0, 0 },
+					{ 0, 0 },
+					{ 0, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+//		case 160: {
+//			int new_state[ROWS][COLS] = {
+//					{ 1, 1 },
+//					{ 1, 0 },
+//					{ 1, 1 }
+//			};
+//			memcpy(state, new_state, sizeof(state));
+//			break;
+//		}
+
+		case 130: {
+			int new_state[ROWS][COLS] = {
+					{ 0, 1 },
+					{ 1, 0 },
+					{ 1, 1 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+
+		case 161: {
+			int new_state[ROWS][COLS] = {
+					{ 0, 1 },
+					{ 0, 0 },
+					{ 1, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+		case 162: {
+			int new_state[ROWS][COLS] = {
+					{ 0, 1 },
+					{ 0, 0 },
+					{ 1, 1 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+
+		case 163: {
+			int new_state[ROWS][COLS] = {
+					{ 0, 1 },
+					{ 1, 1 },
+					{ 1, 1 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+
+		case 129: {
+			int new_state[ROWS][COLS] = {
+					{ 1, 0 },
+					{ 0, 1 },
+					{ 0, 1 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+
+		case 164: {
+			int new_state[ROWS][COLS] = {
+					{ 1, 1 },
+					{ 1, 1 },
+					{ 0, 1 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+
+
+
+		case '.': {
+			int new_state[ROWS][COLS] = {
+					{ 0, 0 },
+					{ 0, 0 },
+					{ 1, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+
+		case ',': {
+			int new_state[ROWS][COLS] = {
+					{ 0, 0 },
+					{ 1, 0 },
+					{ 0, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+
+		case 168:
+		case 63:
+		{
+			int new_state[ROWS][COLS] = {
+					{ 1, 1 },
+					{ 1, 0 },
+					{ 1, 1 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+		case 173:
+		case 33:
+		{
+			int new_state[ROWS][COLS] = {
+					{ 0, 0 },
+					{ 1, 1 },
+					{ 1, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+
+		case ';':
+		{
+			int new_state[ROWS][COLS] = {
+					{ 0, 0 },
+					{ 1, 0 },
+					{ 1, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+
+		case '(':
+		{
+			int new_state[ROWS][COLS] = {
+					{ 1, 0 },
+					{ 1, 0 },
+					{ 0, 1 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+		case ')':
+		{
+			int new_state[ROWS][COLS] = {
+					{ 0, 1 },
+					{ 0, 1 },
+					{ 1, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+		default:
+		break;
+	}
+	updateLEDMatrix( state);
 }
 
 
@@ -328,7 +822,7 @@ void parseCommands(char  *ptrbufferReception){
 		flagBraille = RESET;
 		clearLEDMatrix();
 		writeMsg(&usart2Comm, "Reinicio del sistema \n");
-		delay_ms(5000);
+		delay_ms(timeBraille*5000);
 	}
 
 	else if(strcmp(cmd, "Timer") == 0) {
@@ -363,12 +857,16 @@ void usart2Rx_Callback(void){
 
     if (rxData == '@') {
         rxList[rxListIndex - 1] = '\0';   // Asegurar que la lista esté terminada correctamente con un terminador de cadena
+        listRdy = 1;
         if (rxListIndex <= MAX_RX_LIST_SIZE) {
-            sprintf(bufferBraille, "Frase formada: %s\n", rxList);
+        	sprintf(bufferBraille,rxList);
+
+        	writeMsg(&usart2Comm, "Frase Formada:\n");
+        	writeMsg(&usart2Comm, bufferBraille);
         } else {
             sprintf(bufferBraille, "Frase formada: (excede el tamaño máximo de la lista)\n");
         }
-        writeMsg(&usart2Comm, bufferBraille);
+
         rxListIndex = 0;
         memset(rxList, 0, sizeof(rxList));
     }
