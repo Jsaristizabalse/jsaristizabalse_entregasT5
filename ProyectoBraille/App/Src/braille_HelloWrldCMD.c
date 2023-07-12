@@ -145,8 +145,19 @@ int main(void){
 
 //		traducirBraille(str);
 
-		if (listRdy) {
-		traducirBraille(bufferBraille);
+//		if (listRdy) {127
+//		traducirBraille(bufferBraille);
+//		}
+
+		if (rxData != '\0') {
+			writeChar(&usart2Comm, rxData);
+			alfabetoBraille(rxData);
+
+			if (rxData == '\r') {
+				clearLEDMatrix();
+			}
+
+
 		}
 
 
@@ -367,7 +378,7 @@ void alfabetoBraille(char letra){
 				{1,1}
 		};
 		updateLEDMatrix(state);
-		delay_ms(timeBraille*1000);
+		delay_ms(timeBraille*500);
 	}
 
 
@@ -431,7 +442,7 @@ void alfabetoBraille(char letra){
 		case 'f':
 		case '6': {
 			int new_state[ROWS][COLS] = {
-					{ 1, 0 },
+					{ 1, 1 },
 					{ 1, 0 },
 					{ 0, 0 }
 			};
@@ -442,7 +453,7 @@ void alfabetoBraille(char letra){
 		case '7': {
 			int new_state[ROWS][COLS] = {
 					{ 1, 1 },
-					{ 1, 0 },
+					{ 1, 1 },
 					{ 0, 0 }
 			};
 			memcpy(state, new_state, sizeof(state));
@@ -582,8 +593,8 @@ void alfabetoBraille(char letra){
 
 		case 'v': {
 			int new_state[ROWS][COLS] = {
-					{ 0, 1 },
-					{ 0, 0 },
+					{ 1, 0 },
+					{ 1, 0 },
 					{ 1, 1 }
 			};
 			memcpy(state, new_state, sizeof(state));
@@ -591,7 +602,7 @@ void alfabetoBraille(char letra){
 		}
 		case 'w': {
 			int new_state[ROWS][COLS] = {
-					{ 1, 0 },
+					{ 0, 1 },
 					{ 1, 1 },
 					{ 0, 1 }
 			};
@@ -778,6 +789,41 @@ void alfabetoBraille(char letra){
 			memcpy(state, new_state, sizeof(state));
 			break;
 		}
+
+
+		case '!':
+		{
+			int new_state[ROWS][COLS] = {
+					{ 0, 0 },
+					{ 1, 1 },
+					{ 1, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+		case '"':
+		{
+			int new_state[ROWS][COLS] = {
+					{ 0, 0 },
+					{ 1, 0 },
+					{ 1, 1 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+		case '-':
+		{
+			int new_state[ROWS][COLS] = {
+					{ 0, 0 },
+					{ 0, 0 },
+					{ 1, 1 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
 
 		default:
 		break;

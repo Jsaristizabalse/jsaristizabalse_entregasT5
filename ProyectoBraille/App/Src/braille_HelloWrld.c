@@ -37,7 +37,7 @@
 #define HSE_CLOCK_CONFIGURED		1
 #define PLL_CLOCK_CONFIGURED		2
 
-#define MAX_RX_LIST_SIZE 100   // Tamaño máximo de la lista de recepción
+#define MAX_RX_LIST_SIZE 1000   // Tamaño máximo de la lista de recepción
 char rxList[MAX_RX_LIST_SIZE];   // Lista de recepción para almacenar los datos recibidos
 uint8_t rxListIndex = 0;   // Índice actual en la lista de recepción
 
@@ -367,7 +367,7 @@ void alfabetoBraille(char letra){
 				{1,1}
 		};
 		updateLEDMatrix(state);
-		delay_ms(timeBraille*1000);
+		delay_ms(timeBraille*500);
 	}
 
 
@@ -431,7 +431,7 @@ void alfabetoBraille(char letra){
 		case 'f':
 		case '6': {
 			int new_state[ROWS][COLS] = {
-					{ 1, 0 },
+					{ 1, 1 },
 					{ 1, 0 },
 					{ 0, 0 }
 			};
@@ -442,7 +442,7 @@ void alfabetoBraille(char letra){
 		case '7': {
 			int new_state[ROWS][COLS] = {
 					{ 1, 1 },
-					{ 1, 0 },
+					{ 1, 1 },
 					{ 0, 0 }
 			};
 			memcpy(state, new_state, sizeof(state));
@@ -582,8 +582,8 @@ void alfabetoBraille(char letra){
 
 		case 'v': {
 			int new_state[ROWS][COLS] = {
-					{ 0, 1 },
-					{ 0, 0 },
+					{ 1, 0 },
+					{ 1, 0 },
 					{ 1, 1 }
 			};
 			memcpy(state, new_state, sizeof(state));
@@ -591,7 +591,7 @@ void alfabetoBraille(char letra){
 		}
 		case 'w': {
 			int new_state[ROWS][COLS] = {
-					{ 1, 0 },
+					{ 0, 1 },
 					{ 1, 1 },
 					{ 0, 1 }
 			};
@@ -745,6 +745,16 @@ void alfabetoBraille(char letra){
 			memcpy(state, new_state, sizeof(state));
 			break;
 		}
+		case ':':
+		{
+			int new_state[ROWS][COLS] = {
+					{ 0, 0 },
+					{ 1, 1 },
+					{ 0, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
 
 
 		case '(':
@@ -768,6 +778,39 @@ void alfabetoBraille(char letra){
 			memcpy(state, new_state, sizeof(state));
 			break;
 		}
+
+		case '!':
+		{
+			int new_state[ROWS][COLS] = {
+					{ 0, 0 },
+					{ 1, 1 },
+					{ 1, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+		case '"':
+		{
+			int new_state[ROWS][COLS] = {
+					{ 0, 0 },
+					{ 1, 0 },
+					{ 1, 1 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+		case '-':
+		{
+			int new_state[ROWS][COLS] = {
+					{ 0, 0 },
+					{ 0, 0 },
+					{ 1, 1 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
 
 		default:
 		break;

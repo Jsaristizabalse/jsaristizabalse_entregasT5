@@ -57,6 +57,7 @@ GPIO_Handler_t handlerLED4			= {0};
 GPIO_Handler_t handlerLED5			= {0};
 GPIO_Handler_t handlerLED6			= {0};
 GPIO_Handler_t GPIO_StructHandlers[ROWS][COLS];
+GPIO_Handler_t handlerUserButton = {0};;
 
 //TIMERS
 BasicTimer_Handler_t handlerBlinkyTimer	= {0};  //TIM2
@@ -67,6 +68,10 @@ BasicTimer_Handler_t handlerBrailleTimer	= {0};  //TIM3
 GPIO_Handler_t handlerPinTX		= {0};
 GPIO_Handler_t handlerPinRX		= {0};
 USART_Handler_t usart2Comm		= {0};
+
+/* = = = Handlers EXTI = = = */
+GPIO_Handler_t handlerpinEXTI            = {0};
+EXTI_Config_t Exti		= {0};// EXTI del modo de traducción
 
 char bufferReception[64] = {0};
 char cmd[64] = {0};
@@ -124,6 +129,8 @@ char str[] = "á é í ó ú ñ ü";
 float timeBraille= 3;
 
 uint8_t setClick= 0;
+uint8_t setMode= 0;
+uint8_t flagMode = 0;//1 PARA TXT 0 PARA AUTO TRADUCCION
 
 int main(void){
 	//Activamos el coprocesador matematico
@@ -143,11 +150,35 @@ int main(void){
 
 	while(1){
 
+
+
+		if (flagMode) {
+
+			if (listRdy) {
+			traducirBraille(bufferBraille);
+			}
+		}
+
+
+		else{
+			if (rxData != '\0') {
+//				writeChar(&usart2Comm, rxData);
+				alfabetoBraille(rxData);
+				if (rxData == '\r') {
+					clearLEDMatrix();
+				}
+			}
+		}
+
+
+
 //		traducirBraille(str);
 
-		if (listRdy) {
-		traducirBraille(bufferBraille);
-		}
+//		if (listRdy) {127
+//		traducirBraille(bufferBraille);
+//		}
+
+
 
 
 
@@ -196,6 +227,18 @@ void init_Hardware(void){
 		}
 	};
 
+	//	BOTON
+//	handlerUserButton.pGPIOx = GPIOC;
+//	handlerUserButton.GPIO_PinConfig.GPIO_PinNumber			= PIN_13;
+//	handlerUserButton.GPIO_PinConfig.GPIO_PinMode			= GPIO_MODE_IN;
+//	handlerUserButton.GPIO_PinConfig.GPIO_PinOPType			= GPIO_OTYPE_PUSHPULL;
+//	handlerUserButton.GPIO_PinConfig.GPIO_PinPuPdControl	= GPIO_PUPDR_NOTHING;
+//	handlerUserButton.GPIO_PinConfig.GPIO_PinSpeed			= GPIO_OSPEED_MEDIUM;
+//	handlerUserButton.GPIO_PinConfig.GPIO_PinAltFunMode		= AF0;
+//	GPIO_Config(&handlerUserButton);
+
+
+
 /* ==================================== Configurando los TIMERS =============================================*/
 	//Configurando el TIM2 que controla el Blinky
 	handlerBlinkyTimer.ptrTIMx										= TIM2;
@@ -216,18 +259,18 @@ void init_Hardware(void){
 
 /* ==================================== Configurando los EXTI =============================================*/
 	/*Configuracion PIN para el exti (debe ser un pin como entrada)*/
-//	handlerpinEXTI.pGPIOx = GPIOB;
-//	handlerpinEXTI.GPIO_PinConfig.GPIO_PinNumber = PIN_3;
-//	handlerpinEXTI.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_IN;
-//	handlerpinEXTI.GPIO_PinConfig.GPIO_PinOPType = GPIO_OTYPE_PUSHPULL;
-//	handlerpinEXTI.GPIO_PinConfig.GPIO_PinSpeed = GPIO_OSPEED_FAST;
-//	handlerpinEXTI.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_PUPDR_NOTHING;
-//
-//	GPIO_Config(&handlerpinEXTI);
+	handlerpinEXTI.pGPIOx = GPIOC;
+	handlerpinEXTI.GPIO_PinConfig.GPIO_PinNumber = PIN_13;
+	handlerpinEXTI.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_IN;
+	handlerpinEXTI.GPIO_PinConfig.GPIO_PinOPType = GPIO_OTYPE_PUSHPULL;
+	handlerpinEXTI.GPIO_PinConfig.GPIO_PinSpeed = GPIO_OSPEED_FAST;
+	handlerpinEXTI.GPIO_PinConfig.GPIO_PinPuPdControl = GPIO_PUPDR_PULLUP;
 
-//	Exti.edgeType                                           = EXTERNAL_INTERRUPT_FALLING_EDGE;
-//	Exti.pGPIOHandler                                       = &handlerpinEXTI;
-//	extInt_Config(&Exti);
+	GPIO_Config(&handlerpinEXTI);
+
+	Exti.edgeType                                           = EXTERNAL_INTERRUPT_FALLING_EDGE;
+	Exti.pGPIOHandler                                       = &handlerpinEXTI;
+	extInt_Config(&Exti);
 
 /* ==================================== Configurando los USART =============================================*/
 	handlerPinTX.pGPIOx												= GPIOA;
@@ -275,6 +318,14 @@ void BasicTimer3_Callback(void){
 
 	counter++;
 
+}
+
+
+
+
+void callback_extInt13(void){
+	rxData = '\0';
+	flagMode ^=(SET);
 }
 
 
@@ -367,7 +418,7 @@ void alfabetoBraille(char letra){
 				{1,1}
 		};
 		updateLEDMatrix(state);
-		delay_ms(timeBraille*1000);
+		delay_ms(timeBraille*500);
 	}
 
 
@@ -431,7 +482,7 @@ void alfabetoBraille(char letra){
 		case 'f':
 		case '6': {
 			int new_state[ROWS][COLS] = {
-					{ 1, 0 },
+					{ 1, 1 },
 					{ 1, 0 },
 					{ 0, 0 }
 			};
@@ -442,7 +493,7 @@ void alfabetoBraille(char letra){
 		case '7': {
 			int new_state[ROWS][COLS] = {
 					{ 1, 1 },
-					{ 1, 0 },
+					{ 1, 1 },
 					{ 0, 0 }
 			};
 			memcpy(state, new_state, sizeof(state));
@@ -582,8 +633,8 @@ void alfabetoBraille(char letra){
 
 		case 'v': {
 			int new_state[ROWS][COLS] = {
-					{ 0, 1 },
-					{ 0, 0 },
+					{ 1, 0 },
+					{ 1, 0 },
 					{ 1, 1 }
 			};
 			memcpy(state, new_state, sizeof(state));
@@ -591,7 +642,7 @@ void alfabetoBraille(char letra){
 		}
 		case 'w': {
 			int new_state[ROWS][COLS] = {
-					{ 1, 0 },
+					{ 0, 1 },
 					{ 1, 1 },
 					{ 0, 1 }
 			};
@@ -778,6 +829,41 @@ void alfabetoBraille(char letra){
 			memcpy(state, new_state, sizeof(state));
 			break;
 		}
+
+
+		case '!':
+		{
+			int new_state[ROWS][COLS] = {
+					{ 0, 0 },
+					{ 1, 1 },
+					{ 1, 0 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+		case '"':
+		{
+			int new_state[ROWS][COLS] = {
+					{ 0, 0 },
+					{ 1, 0 },
+					{ 1, 1 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
+		case '-':
+		{
+			int new_state[ROWS][COLS] = {
+					{ 0, 0 },
+					{ 0, 0 },
+					{ 1, 1 }
+			};
+			memcpy(state, new_state, sizeof(state));
+			break;
+		}
+
 
 		default:
 		break;

@@ -83,11 +83,11 @@
 							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.symbolsrec.92902795" name="MCU Output Converter Motorola S-rec with symbols" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.symbolsrec"/>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2128933265.153926883" name="braille_HelloWrldCOPIA.c" rcbsApplicability="disable" resourcePath="App/Src/braille_HelloWrldCOPIA.c" toolsToInvoke="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.277156594.1580818346">
-						<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.277156594.1580818346" name="MCU GCC Compiler" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.277156594"/>
+					<fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.2128933265.85690028" name="braille_HelloWrld.c" rcbsApplicability="disable" resourcePath="App/Src/braille_HelloWrld.c" toolsToInvoke="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.277156594.64120779">
+						<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.277156594.64120779" name="MCU GCC Compiler" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.277156594"/>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="Src/braille_HelloWrldCOPIA.c|Src/braille_pyserial_HelloWrld.c|Src/brailleHello_world.c|Src/braille_pyserial_pyRECIBE.c|Src/braillePYSERIAL.c|Src/braillePserialINDIV.c|Src/braillePserialTEST.c|Src/brailleHello_worldCOPIA.c|Src/braille2.c|Src/braille.c|Src/main.c|Src/mainLCD.c|Src/mainCOPIA.c|Src/mainLCD_USART6.c|Src/mainLCD_USART6_SYSTICK.c|Src/main2COPIAAAAA.c|Src/mainLCD_ACCEL.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="App"/>
+						<entry excluding="Src/braille_HelloWrld.c|Src/braille_HelloWrldCMD.c|Src/braille_HelloWrldCOPIA.c|Src/braille_pyserial_HelloWrld.c|Src/brailleHello_world.c|Src/braille_pyserial_pyRECIBE.c|Src/braillePYSERIAL.c|Src/braillePserialINDIV.c|Src/braillePserialTEST.c|Src/brailleHello_worldCOPIA.c|Src/braille2.c|Src/braille.c|Src/main.c|Src/mainLCD.c|Src/mainCOPIA.c|Src/mainLCD_USART6.c|Src/mainLCD_USART6_SYSTICK.c|Src/main2COPIAAAAA.c|Src/mainLCD_ACCEL.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="App"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="DSP"/>
 					</sourceEntries>
